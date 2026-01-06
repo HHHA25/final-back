@@ -1,0 +1,46 @@
+server:
+  port: 8080
+  address: 0.0.0.0  # 允许所有IP访问
+  servlet:
+    context-path: /
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/property_db?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: 123
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+
+
+# Actuator 配置（新增）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health  # 暴露 health 端点（默认只暴露 info，需要手动加 health）
+  endpoint:
+    health:
+      show-details: always  # 显示健康检查的详细信息（如数据库连接状态）
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.property.system.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      ddl-runner:
+        enabled: false
+      id-type: auto
+
+jwt:
+  expire: 86400000
+  header: Authorization
+  secret: your-jwt-secret-key-here-make-it-long-and-complex
