@@ -13,12 +13,10 @@ import org.apache.ibatis.annotations.Select;
 public interface FeeMapper extends BaseMapper<Fee> {
 
     // 查询用户的物业费（分页）
-    @Select("SELECT * FROM fee WHERE user_id = #{userId} ORDER BY deadline DESC")
-    IPage<Fee> selectByUserId(Page<Fee> page, @Param("userId") Long userId);
+    @Select("SELECT * FROM fee WHERE house_number = #{houseNumber} ORDER BY month DESC")
+    IPage<Fee> selectByHouseNumber(Page<Fee> page, @Param("houseNumber") String houseNumber);
 
     // 查询所有物业费（管理员，分页）
-    @Select("SELECT f.*, u.name as userName, u.house_number as houseNumber " +
-            "FROM fee f LEFT JOIN user u ON f.user_id = u.id " +
-            "ORDER BY f.deadline DESC")
+    @Select("SELECT * FROM fee ORDER BY month DESC")
     IPage<Fee> selectAll(Page<Fee> page);
 }
