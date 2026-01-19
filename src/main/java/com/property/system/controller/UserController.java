@@ -2,6 +2,7 @@
 package com.property.system.controller;
 
 import com.property.system.common.Result;
+import com.property.system.dto.UserCreateDTO;
 import com.property.system.dto.UserLoginDTO;
 import com.property.system.dto.UserRegisterDTO;
 import com.property.system.entity.RegistrationRequest;
@@ -94,5 +95,17 @@ public class UserController {
 
         userService.removeById(userId);
         return Result.success();
+    }
+    /**
+     * 管理员直接创建用户
+     * POST /api/user/admin/create
+     */
+    @PostMapping("/admin/create")
+    public Result<Void> createUser(@Valid @RequestBody UserCreateDTO dto, HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return userService.createUser(dto);
     }
 }

@@ -80,4 +80,29 @@ public class JwtUtils {
             return true;
         }
     }
+    // 添加方法：检查Token是否需要续期（提前1天）
+    public boolean shouldRenew(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+
+            // 如果剩余时间小于1天，需要续期
+            long remainingTime = expiration.getTime() - now.getTime();
+            return remainingTime < (24 * 60 * 60 * 1000); // 1天
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    // 添加方法：续期Token
+    public String renewToken(String oldToken) {
+        String username = getUsername(oldToken);
+        String role = getRole(oldToken);
+        return generateToken(username, role);
+    }
 }

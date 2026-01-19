@@ -4,6 +4,7 @@ package com.property.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.property.system.common.Result;
 import com.property.system.common.exception.BusinessException;
+import com.property.system.dto.UserCreateDTO;
 import com.property.system.dto.UserLoginDTO;
 import com.property.system.dto.UserRegisterDTO;
 import com.property.system.entity.User;
@@ -90,6 +91,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setCreateTime(LocalDateTime.now());
 
         // 4. 保存到数据库
+        userMapper.insert(user);
+        return Result.success();
+    }
+
+    /**
+     * 管理员直接创建用户
+     */
+    @Override
+    public Result<Void> createUser(UserCreateDTO dto) {
+        // 1. 校验用户名是否已存在
+        User existUser = userMapper.selectByUsername(dto.getUsername());
+        if (existUser != null) {
+            throw new BusinessException("用户名已存在");
+        }
+
+        // 2. 密码加密
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+
+        // 3. 构建用户对象
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(encodedPassword);
+        user.setName(dto.getName());
+        user.setHouseNumber(dto.getHouseNumber());
+        user.setPhone(dto.getPhone());
+        user.setRole(dto.getRole());
+        user.setStatus(1);  // 默认为正常状态
+        user.setCreateTime(LocalDateTime.now());
+
+        // 4. 验证角色合法性
+        if (!"ADMIN".equals(dto.getRole()) && !"RESIDENT".equals(dto.getRole())) {
+            throw new BusinessException("角色只能是ADMIN或RESIDENT");
+        }
+
+        // 5. 如果是居民，必须填写房号
+        if ("RESIDENT".equals(dto.getRole()) &&
+                (dto.getHouseNumber() == null || dto.getHouseNumber().trim().isEmpty())) {
+            throw new BusinessException("居民必须填写房号");
+        }
+
+        // 6. 保存到数据库
         userMapper.insert(user);
         return Result.success();
     }

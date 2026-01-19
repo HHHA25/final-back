@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import jakarta.servlet.http.HttpServletRequest;  // 注意这里是jakarta，不是javax
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
@@ -18,10 +18,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;// 请求头参数名
 
     @Value("${jwt.header}")
-    private String tokenHeader;  // 请求头参数名
+    private String tokenHeader;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -45,11 +45,18 @@ public class JwtInterceptor implements HandlerInterceptor {
                 return false;
             }
 
-            // Token有效，将用户信息存入请求属性（供后续接口使用）
+            // Token有效，将用户信息存入请求属性
             String username = jwtUtils.getUsername(token);
             String role = jwtUtils.getRole(token);
             request.setAttribute("username", username);
             request.setAttribute("role", role);
+
+            // 检查是否需要续期，如果需要，在响应头中添加新Token
+            if (jwtUtils.shouldRenew(token)) {
+                String newToken = jwtUtils.renewToken(token);
+                response.setHeader("X-Renew-Token", newToken);
+            }
+
             return true;  // 放行
         } catch (Exception e) {
             // Token无效
