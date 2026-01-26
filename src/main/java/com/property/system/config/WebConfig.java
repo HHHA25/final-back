@@ -26,14 +26,4 @@ public class WebConfig implements WebMvcConfigurer {
                 );
     }
 
-    // 跨域配置（解决前后端分离跨域问题）
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")  // 允许所有来源
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // 允许的方法
-                .allowedHeaders("*")  // 允许的请求头
-                .allowCredentials(true)  // 允许携带Cookie
-                .maxAge(3600);  // 预检请求有效期（秒）
-    }
 }
