@@ -41,6 +41,6 @@ mybatis-plus:
       id-type: auto
 
 jwt:
-  expire: 604800000
+  expire: 432000000
   header: Authorization
   secret: your-jwt-secret-key-here-make-it-long-and-complex

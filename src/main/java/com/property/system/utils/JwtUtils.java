@@ -91,9 +91,9 @@ public class JwtUtils {
             Date expiration = claims.getExpiration();
             Date now = new Date();
 
-            // 如果剩余时间小于1天，需要续期
+            // 如果剩余时间小于2天，需要续期
             long remainingTime = expiration.getTime() - now.getTime();
-            return remainingTime < (24 * 60 * 60 * 1000); // 1天
+            return remainingTime < (2* 24 * 60 * 60 * 1000); // 2天
         } catch (Exception e) {
             return true;
         }
