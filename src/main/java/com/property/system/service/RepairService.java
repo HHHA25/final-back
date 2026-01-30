@@ -11,4 +11,7 @@ public interface RepairService {
     Result<IPage<Repair>> getUserRepairs(Long userId, Integer pageNum, Integer pageSize);
     Result<IPage<Repair>> getAllRepairs(Integer pageNum, Integer pageSize);
     Result<Void> updateStatus(RepairUpdateDTO dto, Long handlerId);
+
+    // 添加搜索方法
+    Result<IPage<Repair>> searchRepairs(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
 }

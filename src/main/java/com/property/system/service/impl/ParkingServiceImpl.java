@@ -1,5 +1,6 @@
 package com.property.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -88,5 +89,29 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingMapper, Parking> impl
 
         baseMapper.deleteById(parkingId);
         return Result.success();
+    }
+
+    @Override
+    public Result<IPage<Parking>> searchParkings(String keyword, String houseNumber, Integer pageNum, Integer pageSize) {
+        Page<Parking> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+
+        LambdaQueryWrapper<Parking> queryWrapper = new LambdaQueryWrapper<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryWrapper.like(Parking::getResidentName, keyword)
+                    .or()
+                    .like(Parking::getCarPlate, keyword)
+                    .or()
+                    .like(Parking::getParkingNumber, keyword);
+        }
+
+        if (houseNumber != null && !houseNumber.trim().isEmpty()) {
+            queryWrapper.like(Parking::getHouseNumber, houseNumber);
+        }
+
+        queryWrapper.orderByDesc(Parking::getStartTime);
+
+        IPage<Parking> parkingPage = baseMapper.selectPage(page, queryWrapper);
+        return Result.success(parkingPage);
     }
 }

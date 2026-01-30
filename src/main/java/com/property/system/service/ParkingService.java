@@ -12,4 +12,7 @@ public interface ParkingService {
     Result<IPage<Parking>> getAllParkings(Integer pageNum, Integer pageSize);
     Result<Void> update(ParkingUpdateDTO dto);
     Result<Void> delete(Long parkingId);
+
+    // 添加搜索方法
+    Result<IPage<Parking>> searchParkings(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
 }

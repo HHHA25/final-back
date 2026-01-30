@@ -1,5 +1,6 @@
 package com.property.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,5 +63,29 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
         baseMapper.updateById(complaint);
 
         return Result.success();
+    }
+
+    @Override
+    public Result<IPage<Complaint>> searchComplaints(String keyword, String houseNumber, Integer pageNum, Integer pageSize) {
+        Page<Complaint> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+
+        LambdaQueryWrapper<Complaint> queryWrapper = new LambdaQueryWrapper<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryWrapper.like(Complaint::getResidentName, keyword)
+                    .or()
+                    .like(Complaint::getType, keyword)
+                    .or()
+                    .like(Complaint::getContent, keyword);
+        }
+
+        if (houseNumber != null && !houseNumber.trim().isEmpty()) {
+            queryWrapper.like(Complaint::getHouseNumber, houseNumber);
+        }
+
+        queryWrapper.orderByDesc(Complaint::getSubmitTime);
+
+        IPage<Complaint> complaintPage = baseMapper.selectPage(page, queryWrapper);
+        return Result.success(complaintPage);
     }
 }

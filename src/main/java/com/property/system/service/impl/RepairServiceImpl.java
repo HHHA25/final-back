@@ -1,5 +1,6 @@
 package com.property.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -102,5 +103,29 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         repairMapper.updateById(repair);
 
         return Result.success();
+    }
+
+    @Override
+    public Result<IPage<Repair>> searchRepairs(String keyword, String houseNumber, Integer pageNum, Integer pageSize) {
+        Page<Repair> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+
+        LambdaQueryWrapper<Repair> queryWrapper = new LambdaQueryWrapper<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryWrapper.like(Repair::getResidentName, keyword)
+                    .or()
+                    .like(Repair::getType, keyword)
+                    .or()
+                    .like(Repair::getDescription, keyword);
+        }
+
+        if (houseNumber != null && !houseNumber.trim().isEmpty()) {
+            queryWrapper.like(Repair::getHouseNumber, houseNumber);
+        }
+
+        queryWrapper.orderByDesc(Repair::getSubmitTime);
+
+        IPage<Repair> repairPage = baseMapper.selectPage(page, queryWrapper);
+        return Result.success(repairPage);
     }
 }

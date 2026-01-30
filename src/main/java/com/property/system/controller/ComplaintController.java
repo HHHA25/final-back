@@ -69,4 +69,38 @@ public class ComplaintController {
         }
         return complaintService.updateStatus(dto);
     }
+
+    // 添加搜索方法
+    @GetMapping("/admin/search")
+    public Result<IPage<Complaint>> searchComplaints(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String houseNumber,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return complaintService.searchComplaints(keyword, houseNumber, pageNum, pageSize);
+    }
+
+    // 添加居民搜索方法
+    @GetMapping("/my/search")
+    public Result<IPage<Complaint>> searchMyComplaints(
+            @RequestParam String houseNumber,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        User user = userService.getByUsername(username);
+
+        // 检查权限：居民只能搜索自己的投诉
+        if (!user.getHouseNumber().equals(houseNumber)) {
+            return Result.forbidden();
+        }
+
+        return complaintService.searchComplaints(keyword, houseNumber, pageNum, pageSize);
+    }
 }

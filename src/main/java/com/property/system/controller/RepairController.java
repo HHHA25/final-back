@@ -93,4 +93,38 @@ public class RepairController {
         User admin = userService.getByUsername(username);
         return repairService.updateStatus(dto, admin.getId());
     }
+    // 添加搜索方法
+    @GetMapping("/admin/search")
+    public Result<IPage<Repair>> searchRepairs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String houseNumber,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return repairService.searchRepairs(keyword, houseNumber, pageNum, pageSize);
+    }
+
+    // 居民搜索接口
+    @GetMapping("/my/search")
+    public Result<IPage<Repair>> searchMyRepairs(
+            @RequestParam String houseNumber,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        User user = userService.getByUsername(username);
+
+        // 检查权限：居民只能搜索自己的投诉
+        if (!user.getHouseNumber().equals(houseNumber)) {
+            return Result.forbidden();
+        }
+            // 管理员使用通用搜索
+            return repairService.searchRepairs(keyword, houseNumber, pageNum, pageSize);
+
+    }
 }

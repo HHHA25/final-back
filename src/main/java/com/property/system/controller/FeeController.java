@@ -92,4 +92,19 @@ public class FeeController {
         User user = userService.getByUsername(username);
         return feeService.pay(dto, user.getHouseNumber());
     }
+
+    // 添加搜索方法
+    @GetMapping("/admin/search")
+    public Result<IPage<Fee>> searchFees(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String houseNumber,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return feeService.searchFees(keyword, houseNumber, pageNum, pageSize);
+    }
 }

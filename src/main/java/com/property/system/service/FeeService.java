@@ -22,4 +22,7 @@ public interface FeeService extends IService<Fee> {
 
     // 缴纳物业费（通过房号）
     Result<Void> pay(FeePayDTO dto, String houseNumber);
+
+    // 添加搜索方法实现
+    Result<IPage<Fee>> searchFees(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
 }

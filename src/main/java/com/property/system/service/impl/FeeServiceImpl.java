@@ -1,5 +1,6 @@
 package com.property.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,7 +9,6 @@ import com.property.system.common.exception.BusinessException;
 import com.property.system.dto.FeeAddDTO;
 import com.property.system.dto.FeePayDTO;
 import com.property.system.entity.Fee;
-import com.property.system.entity.User;
 import com.property.system.mapper.FeeMapper;
 import com.property.system.mapper.UserMapper;
 import com.property.system.service.FeeService;
@@ -106,5 +106,27 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
         feeMapper.updateById(fee);
 
         return Result.success();
+    }
+    // 添加搜索方法实现
+    @Override
+    public Result<IPage<Fee>> searchFees(String keyword, String houseNumber, Integer pageNum, Integer pageSize) {
+        Page<Fee> page = new Page<>(pageNum == null ? 1 : pageNum, pageSize == null ? 10 : pageSize);
+
+        LambdaQueryWrapper<Fee> queryWrapper = new LambdaQueryWrapper<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryWrapper.like(Fee::getResidentName, keyword)
+                    .or()
+                    .like(Fee::getMonth, keyword);
+        }
+
+        if (houseNumber != null && !houseNumber.trim().isEmpty()) {
+            queryWrapper.like(Fee::getHouseNumber, houseNumber);
+        }
+
+        queryWrapper.orderByDesc(Fee::getMonth);
+
+        IPage<Fee> feePage = baseMapper.selectPage(page, queryWrapper);
+        return Result.success(feePage);
     }
 }

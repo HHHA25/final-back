@@ -11,4 +11,7 @@ public interface ComplaintService {
     Result<IPage<Complaint>> getUserComplaints(String houseNumber, Integer pageNum, Integer pageSize);
     Result<IPage<Complaint>> getAllComplaints(Integer pageNum, Integer pageSize);
     Result<Void> updateStatus(ComplaintUpdateDTO dto);
+
+    // 添加搜索方法
+    Result<IPage<Complaint>> searchComplaints(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
 }
