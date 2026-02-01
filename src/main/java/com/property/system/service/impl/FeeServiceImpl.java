@@ -115,10 +115,13 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
         LambdaQueryWrapper<Fee> queryWrapper = new LambdaQueryWrapper<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            queryWrapper.like(Fee::getResidentName, keyword)
-                    .or()
-                    .like(Fee::getMonth, keyword);
+            queryWrapper.and(wrapper ->
+                    wrapper.like(Fee::getHouseNumber, keyword)
+                            .or()
+                            .like(Fee::getResidentName, keyword));
         }
+
+
 
         if (houseNumber != null && !houseNumber.trim().isEmpty()) {
             queryWrapper.like(Fee::getHouseNumber, houseNumber);

@@ -112,11 +112,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         LambdaQueryWrapper<Repair> queryWrapper = new LambdaQueryWrapper<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            queryWrapper.like(Repair::getResidentName, keyword)
-                    .or()
-                    .like(Repair::getType, keyword)
-                    .or()
-                    .like(Repair::getDescription, keyword);
+            queryWrapper.and(wrapper ->
+                    wrapper.like(Repair::getHouseNumber, keyword)
+                            .or()
+                            .like(Repair::getResidentName, keyword));
         }
 
         if (houseNumber != null && !houseNumber.trim().isEmpty()) {

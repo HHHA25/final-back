@@ -98,11 +98,10 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingMapper, Parking> impl
         LambdaQueryWrapper<Parking> queryWrapper = new LambdaQueryWrapper<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            queryWrapper.like(Parking::getResidentName, keyword)
-                    .or()
-                    .like(Parking::getCarPlate, keyword)
-                    .or()
-                    .like(Parking::getParkingNumber, keyword);
+            queryWrapper.and(wrapper ->
+                    wrapper.like(Parking::getParkingNumber, keyword)
+                            .or()
+                            .like(Parking::getHouseNumber, keyword));
         }
 
         if (houseNumber != null && !houseNumber.trim().isEmpty()) {

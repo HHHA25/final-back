@@ -72,11 +72,10 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
         LambdaQueryWrapper<Complaint> queryWrapper = new LambdaQueryWrapper<>();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            queryWrapper.like(Complaint::getResidentName, keyword)
-                    .or()
-                    .like(Complaint::getType, keyword)
-                    .or()
-                    .like(Complaint::getContent, keyword);
+            queryWrapper.and(wrapper ->
+                    wrapper.like(Complaint::getHouseNumber, keyword)
+                            .or()
+                            .like(Complaint::getResidentName, keyword));
         }
 
         if (houseNumber != null && !houseNumber.trim().isEmpty()) {
