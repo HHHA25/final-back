@@ -51,4 +51,13 @@ public class RegistrationRequestController {
         }
         return Result.success(registrationRequestService.getPendingCount());
     }
+
+    @GetMapping("/admin/processed")
+    public Result<List<RegistrationRequest>> getProcessedRequests(HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return registrationRequestService.getProcessedRequests();
+    }
 }

@@ -12,4 +12,8 @@ public interface RegistrationRequestMapper extends BaseMapper<RegistrationReques
 
     @Select("SELECT COUNT(*) FROM registration_request WHERE status = 'PENDING'")
     Integer countPendingRequests();
+
+    @Select("SELECT * FROM registration_request WHERE status IN ('APPROVED', 'REJECTED') ORDER BY submit_time DESC")
+    List<RegistrationRequest> selectProcessedRequests();
+
 }

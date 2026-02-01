@@ -111,4 +111,13 @@ public class RegistrationRequestServiceImpl extends ServiceImpl<RegistrationRequ
     public Integer getPendingCount() {
         return registrationRequestMapper.countPendingRequests();
     }
+
+    @Override
+    public Result<List<RegistrationRequest>> getProcessedRequests() {
+        List<RegistrationRequest> requests = lambdaQuery()
+                .in(RegistrationRequest::getStatus, "APPROVED", "REJECTED")
+                .orderByDesc(RegistrationRequest::getSubmitTime)
+                .list();
+        return Result.success(requests);
+    }
 }

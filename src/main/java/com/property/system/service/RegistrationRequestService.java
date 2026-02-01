@@ -12,4 +12,5 @@ public interface RegistrationRequestService {
     Result<Void> approveRegistration(Long requestId);
     Result<Void> rejectRegistration(Long requestId);
     Integer getPendingCount();
+    Result<List<RegistrationRequest>> getProcessedRequests();
 }
