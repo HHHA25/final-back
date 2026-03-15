@@ -2,6 +2,7 @@
 package com.property.system.controller;
 
 import com.property.system.common.Result;
+import com.property.system.dto.ChangePasswordDTO;
 import com.property.system.dto.UserCreateDTO;
 import com.property.system.dto.UserLoginDTO;
 import com.property.system.dto.UserRegisterDTO;
@@ -40,6 +41,13 @@ public class UserController {
     @PostMapping("/register")
     public Result<Void> register(@Valid @RequestBody UserRegisterDTO registerDTO) {
         return registrationRequestService.submitRegistration(registerDTO);
+    }
+
+    @PutMapping("/password")
+    public Result<Void> changePassword(@Valid @RequestBody ChangePasswordDTO dto,
+                                       HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        return userService.changePassword(username, dto);
     }
 
     @GetMapping("/admin/registration-requests")

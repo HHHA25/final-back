@@ -4,6 +4,7 @@ package com.property.system.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.property.system.common.Result;
 import com.property.system.common.exception.BusinessException;
+import com.property.system.dto.ChangePasswordDTO;
 import com.property.system.dto.UserCreateDTO;
 import com.property.system.dto.UserLoginDTO;
 import com.property.system.dto.UserRegisterDTO;
@@ -133,6 +134,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 6. 保存到数据库
         userMapper.insert(user);
+        return Result.success();
+    }
+
+    @Override
+    public Result<Void> changePassword(String username, ChangePasswordDTO dto) {
+        // 1. 查询用户
+        User user = userMapper.selectByUsername(username);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 2. 验证旧密码
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            throw new BusinessException("旧密码错误");
+        }
+
+        // 3. 新密码加密
+        String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+        user.setPassword(encodedNewPassword);
+
+        // 4. 更新数据库
+        userMapper.updateById(user);
+
         return Result.success();
     }
 
