@@ -3,10 +3,7 @@ package com.property.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.property.system.common.Result;
-import com.property.system.dto.ChangePasswordDTO;
-import com.property.system.dto.UserCreateDTO;
-import com.property.system.dto.UserLoginDTO;
-import com.property.system.dto.UserRegisterDTO;
+import com.property.system.dto.*;
 import com.property.system.entity.User;
 
 /**
@@ -25,4 +22,5 @@ public interface UserService extends IService<User> {
     Result<Void> createUser(UserCreateDTO dto);
 
     Result<Void> changePassword(String username, ChangePasswordDTO dto);
+    Result<Void> forgetPassword(ForgetPasswordDTO dto);
 }

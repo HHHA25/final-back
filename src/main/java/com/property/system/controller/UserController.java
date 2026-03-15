@@ -57,6 +57,10 @@ public class UserController {
         return registrationRequestService.getPendingRequests();
     }
 
+    @PostMapping("/forget-password")
+    public Result<Void> forgetPassword(@Valid @RequestBody ForgetPasswordDTO dto) {
+        return userService.forgetPassword(dto);
+    }
 
 
     @PostMapping("/admin/approve-registration")
