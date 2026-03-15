@@ -2,15 +2,13 @@
 package com.property.system.controller;
 
 import com.property.system.common.Result;
-import com.property.system.dto.ChangePasswordDTO;
-import com.property.system.dto.UserCreateDTO;
-import com.property.system.dto.UserLoginDTO;
-import com.property.system.dto.UserRegisterDTO;
+import com.property.system.dto.*;
 import com.property.system.entity.RegistrationRequest;
 import com.property.system.entity.User;
 import com.property.system.service.RegistrationRequestService;
 import com.property.system.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +56,8 @@ public class UserController {
         }
         return registrationRequestService.getPendingRequests();
     }
+
+
 
     @PostMapping("/admin/approve-registration")
     public Result<Void> approveRegistration(@RequestParam Long requestId, HttpServletRequest request) {
@@ -116,4 +116,21 @@ public class UserController {
         }
         return userService.createUser(dto);
     }
+
+    /**
+     * 获取当前登录用户信息
+     * GET /api/user/info
+     */
+    @GetMapping("/info")
+    public Result<UserInfoDTO> getUserInfo(HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        User user = userService.getByUsername(username);
+        if (user == null) {
+            return Result.fail(404, "用户不存在");
+        }
+        UserInfoDTO dto = new UserInfoDTO();
+        BeanUtils.copyProperties(user, dto);
+        return Result.success(dto);
+    }
+
 }
