@@ -14,4 +14,6 @@ public interface RepairService {
 
     // 添加搜索方法
     Result<IPage<Repair>> searchRepairs(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
+
+    Result<Void> delete(Long feeId);
 }

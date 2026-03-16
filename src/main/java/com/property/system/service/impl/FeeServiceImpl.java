@@ -215,6 +215,16 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
         return BigDecimal.ZERO;
     }
 
+    @Override
+    public Result<Void> delete(Long feeId) {
+        Fee fee = baseMapper.selectById(feeId);
+        if (fee == null) {
+            throw new BusinessException("物业费记录不存在");
+        }
+        baseMapper.deleteById(feeId);
+        return Result.success();
+    }
+
     /**
      * 获取住户姓名：优先从房屋表获取 residentName，如果没有则返回房号
      */

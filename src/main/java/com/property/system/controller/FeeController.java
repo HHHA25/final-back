@@ -111,6 +111,19 @@ public class FeeController {
     }
 
     /**
+     * 管理员删除物业费
+     * DELETE /api/fee/admin/delete/{feeId}
+     */
+    @DeleteMapping("/admin/delete/{feeId}")
+    public Result<Void> delete(@PathVariable Long feeId, HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return feeService.delete(feeId);
+    }
+
+    /**
      * 管理员批量添加物业费
      * POST /api/fee/admin/batch-add
      */

@@ -31,8 +31,8 @@ public class ComplaintController {
         String username = (String) request.getAttribute("username");
         User user = userService.getByUsername(username);
 
-        // 居民只能提交自己房号的投诉
-        if (!user.getHouseNumber().equals(dto.getHouseNumber())) {
+        // 管理员可以代提交任何房号的投诉，居民只能提交自己房号的
+        if (!"ADMIN".equals(user.getRole()) && !user.getHouseNumber().equals(dto.getHouseNumber())) {
             return Result.forbidden();
         }
 
@@ -103,4 +103,18 @@ public class ComplaintController {
 
         return complaintService.searchComplaints(keyword, houseNumber, pageNum, pageSize);
     }
+
+    /**
+     * 管理员删除投诉记录
+     * DELETE /api/complaint/admin/delete/{complaintId}
+     */
+    @DeleteMapping("/admin/delete/{complaintId}")
+    public Result<Void> delete(@PathVariable Long complaintId, HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return complaintService.delete(complaintId);
+    }
+
 }

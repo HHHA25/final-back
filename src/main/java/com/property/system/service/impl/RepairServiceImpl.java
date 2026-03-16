@@ -127,4 +127,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         IPage<Repair> repairPage = baseMapper.selectPage(page, queryWrapper);
         return Result.success(repairPage);
     }
+
+    @Override
+    public Result<Void> delete(Long repairId) {
+        Repair repair = baseMapper.selectById(repairId);
+        if (repair == null) {
+            throw new BusinessException("维修记录不存在");
+        }
+        baseMapper.deleteById(repairId);
+        return Result.success();
+    }
 }

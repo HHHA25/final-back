@@ -87,4 +87,15 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
         IPage<Complaint> complaintPage = baseMapper.selectPage(page, queryWrapper);
         return Result.success(complaintPage);
     }
+
+    @Override
+    public Result<Void> delete(Long complaintId) {
+        Complaint complaint = baseMapper.selectById(complaintId);
+        if (complaint == null) {
+            throw new BusinessException("物业费记录不存在");
+        }
+        // 可根据业务增加约束，例如已缴费的不能删除
+        baseMapper.deleteById(complaintId);
+        return Result.success();
+    }
 }

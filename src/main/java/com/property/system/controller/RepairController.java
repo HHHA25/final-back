@@ -127,4 +127,17 @@ public class RepairController {
             return repairService.searchRepairs(keyword, houseNumber, pageNum, pageSize);
 
     }
+
+    /**
+     * 管理员删除维修记录
+     * DELETE /api/repair/admin/delete/{repairId}
+     */
+    @DeleteMapping("/admin/delete/{repairId}")
+    public Result<Void> delete(@PathVariable Long repairId, HttpServletRequest request) {
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return repairService.delete(repairId);
+    }
 }

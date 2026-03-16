@@ -28,6 +28,8 @@ public interface FeeService extends IService<Fee> {
     // 添加搜索方法实现
     Result<IPage<Fee>> searchFees(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
 
+    Result<Void> delete(Long feeId);
+
     // 新增批量添加方法
     Result<Void> batchAdd(BatchFeeAddDTO dto);
 }
