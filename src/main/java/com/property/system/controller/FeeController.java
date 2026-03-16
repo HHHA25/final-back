@@ -3,6 +3,8 @@ package com.property.system.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.property.system.common.Result;
+import com.property.system.dto.BatchFeeAddDTO;
+import com.property.system.dto.BatchFeeAddResult;
 import com.property.system.dto.FeeAddDTO;
 import com.property.system.dto.FeePayDTO;
 import com.property.system.entity.Fee;
@@ -106,5 +108,19 @@ public class FeeController {
             return Result.forbidden();
         }
         return feeService.searchFees(keyword, houseNumber, pageNum, pageSize);
+    }
+
+    /**
+     * 管理员批量添加物业费
+     * POST /api/fee/admin/batch-add
+     */
+    @PostMapping("/admin/batch-add")
+    public Result<Void> batchAdd(@Valid @RequestBody BatchFeeAddDTO dto, HttpServletRequest request) {
+        // 校验管理员权限
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return feeService.batchAdd(dto);
     }
 }

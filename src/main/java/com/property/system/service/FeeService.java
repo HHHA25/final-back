@@ -3,6 +3,8 @@ package com.property.system.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.property.system.common.Result;
+import com.property.system.dto.BatchFeeAddDTO;
+import com.property.system.dto.BatchFeeAddResult;
 import com.property.system.dto.FeeAddDTO;
 import com.property.system.dto.FeePayDTO;
 import com.property.system.entity.Fee;
@@ -25,4 +27,7 @@ public interface FeeService extends IService<Fee> {
 
     // 添加搜索方法实现
     Result<IPage<Fee>> searchFees(String keyword, String houseNumber, Integer pageNum, Integer pageSize);
+
+    // 新增批量添加方法
+    Result<Void> batchAdd(BatchFeeAddDTO dto);
 }

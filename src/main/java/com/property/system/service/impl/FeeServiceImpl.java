@@ -6,16 +6,24 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.property.system.common.Result;
 import com.property.system.common.exception.BusinessException;
+import com.property.system.dto.BatchFeeAddDTO;
+import com.property.system.dto.BatchFeeAddResult;
 import com.property.system.dto.FeeAddDTO;
 import com.property.system.dto.FeePayDTO;
 import com.property.system.entity.Fee;
+import com.property.system.entity.House;
 import com.property.system.mapper.FeeMapper;
+import com.property.system.mapper.HouseMapper;
 import com.property.system.mapper.UserMapper;
 import com.property.system.service.FeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeService {
@@ -25,6 +33,9 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private HouseMapper houseMapper;  // 用于校验房号是否存在
 
     /**
      * 添加物业费（管理员）
@@ -131,5 +142,88 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
 
         IPage<Fee> feePage = baseMapper.selectPage(page, queryWrapper);
         return Result.success(feePage);
+    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Void> batchAdd(BatchFeeAddDTO dto) {
+        String month = dto.getMonth();
+        List<String> houseNumbers = dto.getHouseNumbers();
+
+        // 1. 校验月份格式（假设 yyyy-MM）
+        if (!month.matches("\\d{4}-\\d{2}")) {
+            throw new BusinessException("月份格式不正确，应为 yyyy-MM");
+        }
+
+        // 2. 校验所有房号是否存在
+        for (String houseNumber : houseNumbers) {
+            House house = houseMapper.selectByHouseNumber(houseNumber);
+            if (house == null) {
+                throw new BusinessException("房号 " + houseNumber + " 不存在");
+            }
+        }
+
+        // 3. 批量添加
+        List<Fee> feeList = new ArrayList<>();
+        for (String houseNumber : houseNumbers) {
+            // 查询上个月该房号的物业费金额
+            BigDecimal amount = getPreviousMonthAmount(houseNumber, month);
+            // 获取住户姓名（从房屋表或用户表）
+            String residentName = getResidentName(houseNumber);
+
+            Fee fee = new Fee();
+            fee.setHouseNumber(houseNumber);
+            fee.setResidentName(residentName);
+            fee.setAmount(amount);
+            fee.setMonth(month);
+            fee.setStatus("UNPAID");
+            fee.setPaymentDate(null);
+            feeList.add(fee);
+        }
+
+        // 批量插入
+        saveBatch(feeList);
+        return Result.success();
+    }
+
+    /**
+     * 获取指定房号上个月的物业费金额
+     * 如果没有上个月记录，则返回默认金额 0
+     */
+    private BigDecimal getPreviousMonthAmount(String houseNumber, String currentMonth) {
+        // 解析当前月份，计算上个月
+        String[] parts = currentMonth.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        if (month == 1) {
+            year--;
+            month = 12;
+        } else {
+            month--;
+        }
+        String previousMonth = String.format("%04d-%02d", year, month);
+
+        // 查询上个月记录
+        LambdaQueryWrapper<Fee> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Fee::getHouseNumber, houseNumber)
+                .eq(Fee::getMonth, previousMonth);
+        Fee previousFee = getOne(wrapper);
+        if (previousFee != null) {
+            return previousFee.getAmount();
+        }
+        // 如果没有上个月记录，可以返回默认值（比如从房屋固定物业费字段获取，或返回0）
+        // 这里简单返回 0，实际可根据业务调整
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * 获取住户姓名：优先从房屋表获取 residentName，如果没有则返回房号
+     */
+    private String getResidentName(String houseNumber) {
+        House house = houseMapper.selectByHouseNumber(houseNumber);
+        if (house != null && house.getResidentName() != null && !house.getResidentName().isEmpty()) {
+            return house.getResidentName();
+        }
+        // 如果没有住户姓名，可以返回房号或默认值
+        return houseNumber;
     }
 }
