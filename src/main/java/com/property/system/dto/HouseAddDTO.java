@@ -18,21 +18,14 @@ public class HouseAddDTO {
 
     private String unitType;
     private BigDecimal area;
-    private Integer roomCount;
-    private Integer livingRoomCount;
-    private Integer bathroomCount;
-    private String orientation;
-    private String houseStatus;
+    private String houseStatus;  // OCCUPIED / VACANT
 
     // 业主信息
     private String ownerName;
     private String ownerPhone;
     private String ownerIdCard;
 
-    // 住户信息
+    // 住户信息（简化）
     private String residentName;
     private String residentPhone;
-    private String residentType;
-    private String contractStartDate;
-    private String contractEndDate;
 }

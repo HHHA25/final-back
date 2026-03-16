@@ -1,6 +1,5 @@
 package com.property.system.dto;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -22,10 +21,6 @@ public class HouseUpdateDTO {
 
     private String unitType;
     private BigDecimal area;
-    private Integer roomCount;
-    private Integer livingRoomCount;
-    private Integer bathroomCount;
-    private String orientation;
     private String houseStatus;
 
     // 业主信息
@@ -33,10 +28,7 @@ public class HouseUpdateDTO {
     private String ownerPhone;
     private String ownerIdCard;
 
-    // 住户信息
+    // 住户信息（简化）
     private String residentName;
     private String residentPhone;
-    private String residentType;
-    private String contractStartDate;
-    private String contractEndDate;
 }

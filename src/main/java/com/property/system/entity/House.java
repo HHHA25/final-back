@@ -17,19 +17,19 @@ public class House {
     private Integer floor;          // 楼层
     private String unitType;        // 户型
     private BigDecimal area;        // 面积
-    private Integer roomCount;      // 房间数
-    private Integer livingRoomCount; // 客厅数
-    private Integer bathroomCount;  // 卫生间数
-    private String orientation;     // 朝向
-    private String houseStatus;     // 房屋状态
+    private String houseStatus;     // 房屋状态 (OCCUPIED/VACANT)
+
+    // 业主信息
     private String ownerName;       // 业主姓名
     private String ownerPhone;      // 业主电话
     private String ownerIdCard;     // 业主身份证
+
+    // 住户信息（简化，仅保留姓名和电话）
     private String residentName;    // 住户姓名
     private String residentPhone;   // 住户电话
-    private String residentType;    // 住户类型
-    private LocalDateTime contractStartDate; // 租约开始
-    private LocalDateTime contractEndDate;   // 租约结束
+
+    // 删除：residentType, contractStartDate, contractEndDate
+
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

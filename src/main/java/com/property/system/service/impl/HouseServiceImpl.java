@@ -49,26 +49,13 @@ public class HouseServiceImpl extends ServiceImpl<HouseMapper, House> implements
         house.setFloor(dto.getFloor());
         house.setUnitType(dto.getUnitType());
         house.setArea(dto.getArea());
-        house.setRoomCount(dto.getRoomCount());
-        house.setLivingRoomCount(dto.getLivingRoomCount());
-        house.setBathroomCount(dto.getBathroomCount());
-        house.setOrientation(dto.getOrientation());
         house.setHouseStatus(dto.getHouseStatus() != null ? dto.getHouseStatus() : "VACANT");
         house.setOwnerName(dto.getOwnerName());
         house.setOwnerPhone(dto.getOwnerPhone());
         house.setOwnerIdCard(dto.getOwnerIdCard());
         house.setResidentName(dto.getResidentName());
         house.setResidentPhone(dto.getResidentPhone());
-        house.setResidentType(dto.getResidentType());
         house.setCreateTime(LocalDateTime.now());
-
-        // 处理日期字段
-        if (dto.getContractStartDate() != null && !dto.getContractStartDate().isEmpty()) {
-            house.setContractStartDate(LocalDateTime.parse(dto.getContractStartDate() + "T00:00:00"));
-        }
-        if (dto.getContractEndDate() != null && !dto.getContractEndDate().isEmpty()) {
-            house.setContractEndDate(LocalDateTime.parse(dto.getContractEndDate() + "T00:00:00"));
-        }
 
         houseMapper.insert(house);
         return Result.success();
@@ -102,26 +89,14 @@ public class HouseServiceImpl extends ServiceImpl<HouseMapper, House> implements
         house.setFloor(dto.getFloor());
         house.setUnitType(dto.getUnitType());
         house.setArea(dto.getArea());
-        house.setRoomCount(dto.getRoomCount());
-        house.setLivingRoomCount(dto.getLivingRoomCount());
-        house.setBathroomCount(dto.getBathroomCount());
-        house.setOrientation(dto.getOrientation());
         house.setHouseStatus(dto.getHouseStatus());
         house.setOwnerName(dto.getOwnerName());
         house.setOwnerPhone(dto.getOwnerPhone());
         house.setOwnerIdCard(dto.getOwnerIdCard());
         house.setResidentName(dto.getResidentName());
         house.setResidentPhone(dto.getResidentPhone());
-        house.setResidentType(dto.getResidentType());
         house.setUpdateTime(LocalDateTime.now());
 
-        // 处理日期字段
-        if (dto.getContractStartDate() != null && !dto.getContractStartDate().isEmpty()) {
-            house.setContractStartDate(LocalDateTime.parse(dto.getContractStartDate() + "T00:00:00"));
-        }
-        if (dto.getContractEndDate() != null && !dto.getContractEndDate().isEmpty()) {
-            house.setContractEndDate(LocalDateTime.parse(dto.getContractEndDate() + "T00:00:00"));
-        }
 
         houseMapper.updateById(house);
         return Result.success();
