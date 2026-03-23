@@ -12,7 +12,7 @@ public interface HouseMapper extends BaseMapper<House> {
     @Select("SELECT h.*, b.building_name, b.building_number " +
             "FROM house h LEFT JOIN building b ON h.building_id = b.id " +
             "WHERE h.building_id = #{buildingId} " +
-            "ORDER BY h.floor DESC, h.house_number")
+            "ORDER BY h.floor ASC, h.house_number")
     IPage<House> selectByBuildingId(Page<House> page, @Param("buildingId") Long buildingId);
 
     @Select("SELECT h.*, b.building_name, b.building_number " +
