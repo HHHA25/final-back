@@ -111,21 +111,19 @@ public class RepairController {
     // 居民搜索接口
     @GetMapping("/my/search")
     public Result<IPage<Repair>> searchMyRepairs(
-            @RequestParam String houseNumber,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize,
             HttpServletRequest request) {
+
         String username = (String) request.getAttribute("username");
         User user = userService.getByUsername(username);
-
-        // 检查权限：居民只能搜索自己的投诉
-        if (!user.getHouseNumber().equals(houseNumber)) {
-            return Result.forbidden();
+        if (user == null) {
+            return Result.fail(401, "用户不存在");
         }
-            // 管理员使用通用搜索
-            return repairService.searchRepairs(keyword, houseNumber, pageNum, pageSize);
-
+        // 直接使用登录用户的房号
+        String houseNumber = user.getHouseNumber();
+        return repairService.searchRepairs(keyword, houseNumber, pageNum, pageSize);
     }
 
     /**

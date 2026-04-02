@@ -111,6 +111,28 @@ public class FeeController {
     }
 
     /**
+     * 居民搜索自己的物业费
+     * GET /api/fee/my/search
+     */
+    @GetMapping("/my/search")
+    public Result<IPage<Fee>> searchMyFees(
+            @RequestParam String houseNumber,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletRequest request) {
+
+        String username = (String) request.getAttribute("username");
+        User user = userService.getByUsername(username);
+
+        if (!"ADMIN".equals(user.getRole()) && !user.getHouseNumber().equals(houseNumber)) {
+            return Result.forbidden();
+        }
+
+        return feeService.searchFees(keyword, houseNumber, pageNum, pageSize);
+    }
+
+    /**
      * 管理员删除物业费
      * DELETE /api/fee/admin/delete/{feeId}
      */
