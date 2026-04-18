@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.property.system.common.Result;
 import com.property.system.common.exception.BusinessException;
-import com.property.system.dto.BatchFeeAddDTO;
-import com.property.system.dto.BatchFeeAddResult;
-import com.property.system.dto.FeeAddDTO;
-import com.property.system.dto.FeePayDTO;
+import com.property.system.dto.*;
 import com.property.system.entity.Fee;
 import com.property.system.entity.House;
 import com.property.system.mapper.FeeMapper;
@@ -225,6 +222,36 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
         return Result.success();
     }
 
+    @Override
+    public Result<Void> update(FeeUpdateDTO dto) {
+        // 1. 检查记录是否存在
+        Fee fee = baseMapper.selectById(dto.getId());
+        if (fee == null) {
+            throw new BusinessException("物业费记录不存在");
+        }
+
+        // 2. 检查房号+月份是否已被其他记录占用（可选，根据业务决定）
+        LambdaQueryWrapper<Fee> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Fee::getHouseNumber, dto.getHouseNumber())
+                .eq(Fee::getMonth, dto.getMonth())
+                .ne(Fee::getId, dto.getId());
+        Long count = baseMapper.selectCount(wrapper);
+        if (count > 0) {
+            throw new BusinessException("该房号在 " + dto.getMonth() + " 月份已有物业费记录");
+        }
+
+        // 3. 更新字段
+        fee.setHouseNumber(dto.getHouseNumber());
+        fee.setResidentName(dto.getResidentName());
+        fee.setAmount(dto.getAmount());
+        fee.setMonth(dto.getMonth());
+        // 注意：status 和 paymentDate 不应通过编辑接口修改，保持原值
+
+        // 4. 保存
+        baseMapper.updateById(fee);
+        return Result.success();
+    }
+
     /**
      * 获取住户姓名：优先从房屋表获取 residentName，如果没有则返回房号
      */
@@ -236,4 +263,5 @@ public class FeeServiceImpl extends ServiceImpl<FeeMapper, Fee> implements FeeSe
         // 如果没有住户姓名，可以返回房号或默认值
         return houseNumber;
     }
+
 }

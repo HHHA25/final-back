@@ -3,10 +3,7 @@ package com.property.system.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.property.system.common.Result;
-import com.property.system.dto.BatchFeeAddDTO;
-import com.property.system.dto.BatchFeeAddResult;
-import com.property.system.dto.FeeAddDTO;
-import com.property.system.dto.FeePayDTO;
+import com.property.system.dto.*;
 import com.property.system.entity.Fee;
 import com.property.system.entity.User;
 import com.property.system.service.FeeService;
@@ -157,5 +154,18 @@ public class FeeController {
             return Result.forbidden();
         }
         return feeService.batchAdd(dto);
+    }
+    /**
+     * 管理员更新物业费
+     * PUT /api/fee/admin/update
+     */
+    @PutMapping("/admin/update")
+    public Result<Void> update(@Valid @RequestBody FeeUpdateDTO dto, HttpServletRequest request) {
+        // 校验管理员权限
+        String role = (String) request.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            return Result.forbidden();
+        }
+        return feeService.update(dto);
     }
 }
